@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  overflow-x: hidden;
 }
 
 @media (min-width: 768px) {
@@ -7,6 +8,13 @@ html {
     font-size: 16px;
   }
 }
+
+:root {
+    --bs-primary: #febcd5;
+    --bs-secondary: #fdd5dc;
+    --bs-accent: #f36a90;
+}
+
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
@@ -19,6 +27,46 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: var(--bs-secondary);
+}
+
+footer {
+    background-color: white;
+}
+
+a {
+    color: var(--bs-accent);
+}
+
+textarea {
+    height: 30vh;
+    resize: none;
+    overflow-y: auto;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+.discussion:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn-primary {
+    background-color: var(--bs-accent);
+    border-color: var(--bs-accent);
+}
+
+.btn:hover {
+    color: white;
+    background-color: var(--bs-primary);
+    border-color: white;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {

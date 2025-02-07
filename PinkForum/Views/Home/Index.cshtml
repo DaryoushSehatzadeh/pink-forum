@@ -5,11 +5,9 @@
     ViewData["Title"] = "Home Page";
 }
 
-<a href="@Url.Action("Create", "Discussions")" class="btn btn-primary newDiscussionBtn">
+<a href="@Url.Action("Create", "Discussions")" class="btn btn-primary newDiscussionBtn mb-3">
     New Discussion
 </a>
-
-<br />
 
 @if (Model != null)
 {
@@ -32,22 +30,19 @@
                                               $"{(int)(timeSpan.TotalDays / 365)} years ago";
         }
 
-
-            <br />
-
             <div class="row discussion">
                 
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card mb-3">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-2">
+                                <div class="col-md-2" style="height: 30vh; overflow: hidden;">
                                     <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
                                         <img src="@imageUrl" class="img-fluid" alt="@item.Content">
                                     </a>
                                 </div>
 
-                                <div class="col-md-10">
+                                <div class="col-md-10" style="height: 30vh;">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
                                             <h5 class="card-title mb-0">@item.Title</h5>

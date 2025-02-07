@@ -5,25 +5,30 @@
 }
 
 <div class="row">
-    <div class="card">
+    <div class="card discussion mb-3">
         <div class="card-body">
 
-            <div class="row">
-                <h5>@Model.Title</h5>
+            <div class="row mb-3" style="text-align: center;">
+                <h1>@Model.Title</h1>
             </div>
 
-            <div class="row">
-                <img src="@Url.Content("~/images/" + Model.ImageFilename)" class="img-fluid" />
+            <div class="row mb-3" style="justify-content: center;">
+                <img src="@Url.Content("~/images/" + Model.ImageFilename)" style="width: auto;"/>
             </div>
 
-            <div class="row">
+            <div class="row mb-3">
                 <p>@Model.Content</p>
             </div>
+
+            <div class="row">
+                <p class="text-muted small">Posted On: @Model.CreateDate</p>
+            </div>
+
         </div>
     </div>
 </div>
 
-<a href="@Url.Action("Create", "Comments", new { discussionId = Model.DiscussionId })" class="btn btn-primary">
+<a href="@Url.Action("Create", "Comments", new { discussionId = Model.DiscussionId })" class="btn btn-primary mb-3">
     Write a Comment
 </a>
 
@@ -31,10 +36,29 @@
 {
     @foreach (var comment in Model.Comments)
     {
+        DateTime now = DateTime.UtcNow;
+        string howLongAgoCommented = GetTimeAgo(now - comment.CreateDate);
+
+        static string GetTimeAgo(TimeSpan timeSpan)
+        {
+            return timeSpan.TotalMinutes < 60 ? $"{(int)timeSpan.TotalMinutes} minutes ago" :
+                   timeSpan.TotalHours < 24 ? $"{(int)timeSpan.TotalHours} hours ago" :
+                   timeSpan.TotalDays < 30 ? $"{(int)timeSpan.TotalDays} days ago" :
+                   timeSpan.TotalDays < 365 ? $"{(int)(timeSpan.TotalDays / 30)} months ago" :
+                                              $"{(int)(timeSpan.TotalDays / 365)} years ago";
+        }
+
         <div class="row">
-            <div class="card">
+            <div class="card mb-1">
                 <div class="card-body">
-                    <p>@comment.Content</p>
+                    <div class="row">
+                        <p style="margin-top: 1rem;">@comment.Content</p>
+                    </div>
+                    <div class="row">
+                        <p class="text-muted small" style="position: relative; bottom: 0; margin-bottom: 0;">
+                            Commented: @howLongAgoCommented
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
