@@ -1,0 +1,42 @@
+﻿@model Discussion
+
+@{
+    ViewData["Title"] = "Discussion Details";
+}
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+
+            <div class="row">
+                <h5>@Model.Title</h5>
+            </div>
+
+            <div class="row">
+                <img src="@Url.Content("~/images/" + Model.ImageFilename)" class="img-fluid" />
+            </div>
+
+            <div class="row">
+                <p>@Model.Content</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="@Url.Action("Create", "Comments", new { discussionId = Model.DiscussionId })" class="btn btn-primary">
+    Write a Comment
+</a>
+
+@if (Model.Comments != null)
+{
+    @foreach (var comment in Model.Comments)
+    {
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <p>@comment.Content</p>
+                </div>
+            </div>
+        </div>
+    }
+}

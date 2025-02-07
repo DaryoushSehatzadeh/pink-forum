@@ -1,0 +1,82 @@
+﻿@model List<PinkForum.Models.Discussion>
+
+@{
+
+    ViewData["Title"] = "Home Page";
+}
+
+<a href="@Url.Action("Create", "Discussions")" class="btn btn-primary newDiscussionBtn">
+    New Discussion
+</a>
+
+<br />
+
+@if (Model != null)
+{
+    @foreach (var item in Model)
+    {
+        string imageUrl = Url.Content($"~/images/{item.ImageFilename}");
+        int commentCount = item.Comments.Count();
+        Comment? mostRecentComment = item.Comments.OrderByDescending(c => c.CreateDate).FirstOrDefault();
+
+        DateTime now = DateTime.UtcNow;
+        string howLongAgoPosted = GetTimeAgo(now - item.CreateDate);
+        string howLongAgoCommented = mostRecentComment != null ? GetTimeAgo(now - mostRecentComment.CreateDate) : "No comments yet";
+
+        static string GetTimeAgo(TimeSpan timeSpan)
+        {
+            return timeSpan.TotalMinutes < 60 ? $"{(int)timeSpan.TotalMinutes} minutes ago" :
+                   timeSpan.TotalHours < 24 ? $"{(int)timeSpan.TotalHours} hours ago" :
+                   timeSpan.TotalDays < 30 ? $"{(int)timeSpan.TotalDays} days ago" :
+                   timeSpan.TotalDays < 365 ? $"{(int)(timeSpan.TotalDays / 30)} months ago" :
+                                              $"{(int)(timeSpan.TotalDays / 365)} years ago";
+        }
+
+
+            <br />
+
+            <div class="row discussion">
+                
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
+                                        <img src="@imageUrl" class="img-fluid" alt="@item.Content">
+                                    </a>
+                                </div>
+
+                                <div class="col-md-10">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
+                                            <h5 class="card-title mb-0">@item.Title</h5>
+                                        </a>
+                                        <span class="text-muted small">Posted: @howLongAgoPosted</span>
+                                    </div>
+
+                                    <div class="row card-row">
+                                        <p class="card-text">
+                                            @item.Content
+                                        </p>
+                                    </div> 
+                                    
+                                    <div class="row card-foot">
+                                        <p class ="text-muted small">
+                                            @commentCount <i class="fa-regular fa-comment"></i> &nbsp;&nbsp;&nbsp;&nbsp; Most Recent: @howLongAgoCommented
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        }
+    }
+    else {
+        <h5>
+            Be the first to start a Discussion!
+        </h5>
+    }
