@@ -47,7 +47,7 @@
                                         <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
                                             <h5 class="card-title mb-0">@item.Title</h5>
                                         </a>
-                                        <span class="text-muted small">Posted: @howLongAgoPosted</span>
+                                        
                                     </div>
 
                                     <div class="row card-row">
@@ -58,7 +58,7 @@
                                     
                                     <div class="row card-foot">
                                         <p class ="text-muted small">
-                                            @commentCount <i class="fa-regular fa-comment"></i> &nbsp;&nbsp;&nbsp;&nbsp; Most Recent: @howLongAgoCommented
+                                        Posted: @howLongAgoPosted &nbsp;&nbsp;&nbsp;&nbsp; @commentCount <i class="fa-regular fa-comment"></i> &nbsp;&nbsp;&nbsp;&nbsp; Most Recent: @howLongAgoCommented
                                         </p>
                                     </div>
                                 </div>

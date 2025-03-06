@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using PinkForum.Data;
 
 namespace PinkForum.Models
 {
@@ -20,5 +21,10 @@ namespace PinkForum.Models
         [NotMapped]
         [Display(Name = "Image")]
         public IFormFile? ImageFile { get; set; } // nullable!!!
+
+        public string ApplicationUserId { get; set; } = string.Empty;
+
+        [NotMapped]
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }

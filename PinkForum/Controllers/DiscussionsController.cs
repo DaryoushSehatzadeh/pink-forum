@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,19 +12,35 @@ using PinkForum.Models;
 
 namespace PinkForum.Controllers
 {
+    [Authorize]
     public class DiscussionsController : Controller
     {
         private readonly PinkForumContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DiscussionsController(PinkForumContext context)
+        public DiscussionsController(PinkForumContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Discussions
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Discussion.ToListAsync());
+            var userID = _userManager.GetUserId(User);
+            var discussions = await _context.Discussion.ToListAsync();
+
+            List<Discussion> userDiscussions = new List<Discussion>();
+
+            foreach (var discussion in discussions)
+            {
+                if (discussion.ApplicationUserId == userID)
+                {
+                    userDiscussions.Add(discussion);
+                }
+            }
+
+            return View(userDiscussions);
         }
 
         // GET: Discussions/Details/5
@@ -54,7 +72,7 @@ namespace PinkForum.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DiscussionId,Title,Content,ImageFilename,CreateDate,ImageFile")] Discussion discussion)
+        public async Task<IActionResult> Create([Bind("DiscussionId,Title,Content,ImageFilename,CreateDate,ImageFile,ApplicationUserId")] Discussion discussion)
         {
             // rename the uploaded file to a guid (unique filename). Set before photo saved in database.
             discussion.ImageFilename = Guid.NewGuid().ToString() + Path.GetExtension(discussion.ImageFile?.FileName);
@@ -62,6 +80,8 @@ namespace PinkForum.Controllers
             // Validation
             if (ModelState.IsValid)
             {
+                var userID = _userManager.GetUserId(User);
+                discussion.ApplicationUserId = userID;
 
                 _context.Add(discussion);
                 await _context.SaveChangesAsync();

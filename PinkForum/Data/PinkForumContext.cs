@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace PinkForum.Data
 {
-    public class PinkForumContext : IdentityDbContext
+    public class PinkForumContext : IdentityDbContext<ApplicationUser>
     {
         public PinkForumContext (DbContextOptions<PinkForumContext> options)
             : base(options)

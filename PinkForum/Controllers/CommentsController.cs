@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +12,16 @@ using PinkForum.Models;
 
 namespace PinkForum.Controllers
 {
+    [Authorize]
     public class CommentsController : Controller
     {
         private readonly PinkForumContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CommentsController(PinkForumContext context)
+        public CommentsController(PinkForumContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // Deleted:
@@ -55,6 +60,9 @@ namespace PinkForum.Controllers
 
             if (ModelState.IsValid)
             {
+                var userID = _userManager.GetUserId(User);
+                comment.ApplicationUserId = userID;
+
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("DiscussionDetails", "Home", new { id = comment.DiscussionId });
