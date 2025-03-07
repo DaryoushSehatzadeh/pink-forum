@@ -13,6 +13,9 @@
 {
     @foreach (var item in Model)
     {
+        var username = item.ApplicationUser?.Name;
+        var pfp = item.ApplicationUser?.ImageFilename == "" ? Url.Content($"~/profile/default.png") : Url.Content($"~/profile/{item.ApplicationUser?.ImageFilename}");
+
         string imageUrl = Url.Content($"~/images/{item.ImageFilename}");
         int commentCount = item.Comments.Count();
         Comment? mostRecentComment = item.Comments.OrderByDescending(c => c.CreateDate).FirstOrDefault();
@@ -47,7 +50,12 @@
                                         <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
                                             <h5 class="card-title mb-0">@item.Title</h5>
                                         </a>
-                                        
+                                        <div>
+                                        <a href="@Url.Action("Profile", "Home", new { id = item.ApplicationUserId })">
+                                            <span class="text-muted small">@username</span>
+                                            <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 5vh; width: 5vh;" />
+                                        </a>
+                                        </div>
                                     </div>
 
                                     <div class="row card-row">
@@ -57,7 +65,7 @@
                                     </div> 
                                     
                                     <div class="row card-foot">
-                                        <p class ="text-muted small">
+                                        <p class="text-muted small">
                                         Posted: @howLongAgoPosted &nbsp;&nbsp;&nbsp;&nbsp; @commentCount <i class="fa-regular fa-comment"></i> &nbsp;&nbsp;&nbsp;&nbsp; Most Recent: @howLongAgoCommented
                                         </p>
                                     </div>

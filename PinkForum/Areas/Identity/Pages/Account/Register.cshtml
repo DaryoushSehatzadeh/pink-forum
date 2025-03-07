@@ -44,12 +44,18 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="Input.Image" class="form-label">Profile Picture</label>
-                <div class="d-flex align-items-center">
-                    <input asp-for="Input.Image" type="file" class="form-control me-2" aria-required="false" />
-                </div>
+                <label asp-for="Input.Image" class="form-label"></label>
+                <input type="file" asp-for="Input.Image" class="form-control" />
                 <span asp-validation-for="Input.Image" class="text-danger"></span>
             </div>
+
+            @* <div class="mb-3"> *@
+            @*     <label asp-for="Input.Image" class="form-label">Profile Picture</label> *@
+            @*     <div class="d-flex align-items-center"> *@
+            @*         <input asp-for="Input.Image" type="file" class="form-control me-2" aria-required="false" /> *@
+            @*     </div> *@
+            @*     <span asp-validation-for="Input.Image" class="text-danger"></span> *@
+            @* </div> *@
 
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>

@@ -36,6 +36,11 @@
 {
     @foreach (var comment in Model.Comments)
     {
+        var username = comment.ApplicationUser?.UserName;
+        var pfp = string.IsNullOrEmpty(comment.ApplicationUser?.ImageFilename)
+            ? Url.Content("~/profile/default.png")
+            : Url.Content($"~/profile/{comment.ApplicationUser.ImageFilename}");
+
         DateTime now = DateTime.UtcNow;
         string howLongAgoCommented = GetTimeAgo(now - comment.CreateDate);
 
@@ -52,12 +57,23 @@
             <div class="card mb-1">
                 <div class="card-body">
                     <div class="row">
-                        <p style="margin-top: 1rem;">@comment.Content</p>
-                    </div>
-                    <div class="row">
-                        <p class="text-muted small" style="position: relative; bottom: 0; margin-bottom: 0;">
-                            Commented: @howLongAgoCommented
-                        </p>
+                        <div class="col-md-2 d-flex justify-content-center" style="padding: 0;">
+                            <div class="row">
+                                <a href="@Url.Action("Profile", "Home", new { id = comment.ApplicationUserId })">
+                                    <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 15vh; width: 15vh;" />
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="row">
+                                <a href="@Url.Action("Profile", "Home", new { id = comment.ApplicationUserId })">
+                                    <p class="fw-bold">@username : <span class="text-muted small">@howLongAgoCommented</span></p>
+                                </a>
+                            </div>
+                            <div class="row">
+                                <p>@comment.Content</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

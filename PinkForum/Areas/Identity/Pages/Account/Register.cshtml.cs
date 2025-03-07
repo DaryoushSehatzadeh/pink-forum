@@ -134,6 +134,7 @@ namespace PinkForum.Areas.Identity.Pages.Account
 
                 user.Name = Input.Name;
                 user.Location = Input.Location;
+                user.Image = Input.Image;
                 user.ImageFilename = Guid.NewGuid().ToString() + Path.GetExtension(user.Image?.FileName);
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -143,6 +144,16 @@ namespace PinkForum.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    if (user.Image != null)
+                    {
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "profile", user.ImageFilename);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await user.Image.CopyToAsync(fileStream);
+                        }
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

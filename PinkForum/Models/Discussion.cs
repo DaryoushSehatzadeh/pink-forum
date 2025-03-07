@@ -23,8 +23,6 @@ namespace PinkForum.Models
         public IFormFile? ImageFile { get; set; } // nullable!!!
 
         public string ApplicationUserId { get; set; } = string.Empty;
-
-        [NotMapped]
         public ApplicationUser? ApplicationUser { get; set; }
     }
 }

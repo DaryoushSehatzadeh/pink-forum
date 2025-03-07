@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PinkForum.Data;
 using PinkForum.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace PinkForum.Controllers
@@ -17,16 +18,21 @@ namespace PinkForum.Controllers
         //}
 
         private readonly PinkForumContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(PinkForumContext context)
+        public HomeController(PinkForumContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
             // get all discussions
-            var discussions = await _context.Discussion.Include(m => m.Comments).ToListAsync();
+            var discussions = await _context.Discussion
+                .Include(m => m.ApplicationUser)
+                .Include(m => m.Comments)
+                .ToListAsync();
 
             return View(discussions);
         }
@@ -40,7 +46,10 @@ namespace PinkForum.Controllers
             }
 
             // get discussion by id
-            var discussion = await _context.Discussion.Include(m => m.Comments).FirstOrDefaultAsync(m => m.DiscussionId == id);
+            var discussion = await _context.Discussion
+                .Include(m => m.ApplicationUser)
+                .Include(m => m.Comments)
+                .FirstOrDefaultAsync(m => m.DiscussionId == id);
 
             if (discussion == null)
             {
