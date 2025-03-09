@@ -4,11 +4,9 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1 class="mb-4" style="text-align: center;">Start A New Dicussion!</h1>
 
-<h4>Discussion</h4>
-<hr />
-<div class="row">
+<div class="row" style="justify-content: center;">
     <div class="col-md-4">
         <form enctype="multipart/form-data" asp-action="Create">
 
@@ -43,11 +41,12 @@
             </div>
 
         </form>
+        <div>
+            <button class="btn btn-primary">
+                <a style="color: white; text-decoration: none;" asp-action="Index">Back to List</a>
+            </button>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

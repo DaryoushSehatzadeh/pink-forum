@@ -7,36 +7,47 @@
 <div class="row">
     <div class="card discussion mb-3">
         <div class="card-body">
-
-            <div class="row mb-3" style="text-align: center;">
-                <h1>@Model.Title</h1>
-            </div>
-
-            <div class="row mb-3" style="justify-content: center;">
-                <img src="@Url.Content("~/images/" + Model.ImageFilename)" style="width: auto;"/>
-            </div>
-
-            <div class="row mb-3">
-                <p>@Model.Content</p>
-            </div>
-
             <div class="row">
-                <p class="text-muted small">Posted On: @Model.CreateDate</p>
+                <div class="row mb-3" style="display: inline-block;">
+                    <img class="img-thumbnail rounded-circle shadow-sm"
+                         style="height: 15vh; width: 15vh; padding: 0;"
+                         src="@Url.Content("~/profile/" + Model.ApplicationUser?.ImageFilename)"
+                         alt="@Model.ApplicationUser?.Name 's Photo" />
+                    <span class="text-muted">@Model.ApplicationUser?.Name : @Model.CreateDate</span>
+                </div>
             </div>
+            
+            <div class="row">
+                <div class="row mb-3" style="text-align: center;">
+                    <h1>@Model.Title</h1>
+                </div>
 
+                @if (ViewBag.ImageFiles.Contains(Model.ImageFilename))
+                {
+                    <div class="row mb-3" style="justify-content: center;">
+                        <img src="@Url.Content("~/images/" + Model.ImageFilename)" style="width: auto;" />
+                    </div>
+                }
+
+                <div class="row mb-3" style="justify-content: center;">
+                    <p style="width: 75%;">@Model.Content</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<div class="row" style="justify-content: center;">
+    <a href="@Url.Action("Create", "Comments", new { discussionId = Model.DiscussionId })" class="btn btn-primary mb-3" style="width: 60%;">
+        Write a Comment
+    </a>
+</div>
 
-<a href="@Url.Action("Create", "Comments", new { discussionId = Model.DiscussionId })" class="btn btn-primary mb-3">
-    Write a Comment
-</a>
 
 @if (Model.Comments != null)
 {
     @foreach (var comment in Model.Comments)
     {
-        var username = comment.ApplicationUser?.UserName;
+        var username = comment.ApplicationUser?.Name;
         var pfp = string.IsNullOrEmpty(comment.ApplicationUser?.ImageFilename)
             ? Url.Content("~/profile/default.png")
             : Url.Content($"~/profile/{comment.ApplicationUser.ImageFilename}");
@@ -60,7 +71,7 @@
                         <div class="col-md-2 d-flex justify-content-center" style="padding: 0;">
                             <div class="row">
                                 <a href="@Url.Action("Profile", "Home", new { id = comment.ApplicationUserId })">
-                                    <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 15vh; width: 15vh;" />
+                                    <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 15vh; width: 15vh; padding: 0;" />
                                 </a>
                             </div>
                         </div>

@@ -4,19 +4,15 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1 class="mb-4" style="text-align: center;">Leave A Comment!</h1>
 
-<h4>Comment</h4>
-<hr />
-
-<div class="row">
+<div class="row" style="justify-content: center;">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" value="@ViewBag.DiscussionId" name="DiscussionId" />
 
             <div class="form-group mb-3">
-                <label asp-for="Content" class="control-label"></label>
                 <textarea asp-for="Content" class="form-control"></textarea>
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
@@ -38,11 +34,12 @@
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
+        <div>
+            <button class="btn btn-primary">
+                <a asp-action="DiscussionDetails" asp-controller="Home" asp-route-id="@ViewBag.DiscussionId" style="color: white; text-decoration: none;">Back to Discussion</a>
+            </button>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="DiscussionDetails" asp-controller="Home" asp-route-id="@ViewBag.DiscussionId">Back to Discussion</a>
 </div>
 
 @section Scripts {

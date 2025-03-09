@@ -28,7 +28,9 @@ namespace PinkForum.Controllers
         public async Task<IActionResult> Index()
         {
             var userID = _userManager.GetUserId(User);
-            var discussions = await _context.Discussion.ToListAsync();
+            var discussions = await _context.Discussion
+                .Include(m => m.ApplicationUser)
+                .ToListAsync();
 
             List<Discussion> userDiscussions = new List<Discussion>();
 
@@ -39,6 +41,13 @@ namespace PinkForum.Controllers
                     userDiscussions.Add(discussion);
                 }
             }
+
+            // Get all image filenames in the wwwroot/images directory
+            string imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            var imageFiles = Directory.GetFiles(imagesDirectory).Select(Path.GetFileName).ToList();
+
+            // Pass the image files to the view (or use them in your code)
+            ViewBag.ImageFiles = imageFiles;
 
             return View(userDiscussions);
         }
@@ -52,7 +61,16 @@ namespace PinkForum.Controllers
             }
 
             var discussion = await _context.Discussion
+                .Include(m => m.ApplicationUser)
                 .FirstOrDefaultAsync(m => m.DiscussionId == id);
+
+            // Get all image filenames in the wwwroot/images directory
+            string imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            var imageFiles = Directory.GetFiles(imagesDirectory).Select(Path.GetFileName).ToList();
+
+            // Pass the image files to the view (or use them in your code)
+            ViewBag.ImageFiles = imageFiles;
+
             if (discussion == null)
             {
                 return NotFound();
@@ -98,7 +116,7 @@ namespace PinkForum.Controllers
                 }
 
                 // Re-direct to the Photos/Index page
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DiscussionDetails", "Home", new { id = discussion.DiscussionId });
             }
             return View(discussion);
         }
@@ -122,9 +140,9 @@ namespace PinkForum.Controllers
         // POST: Discussions/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("Discussions/Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DiscussionId,Title,Content,ImageFilename,CreateDate")] Discussion discussion)
+        public async Task<IActionResult> Edit(int id, [Bind("DiscussionId,Title,Content,ImageFilename")] Discussion discussion)
         {
             if (id != discussion.DiscussionId)
             {
@@ -135,7 +153,32 @@ namespace PinkForum.Controllers
             {
                 try
                 {
-                    _context.Update(discussion);
+                    var existingDiscussion = await _context.Discussion.FindAsync(id);
+                    if (existingDiscussion == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Retain existing ApplicationUserId
+                    discussion.ApplicationUserId = existingDiscussion.ApplicationUserId;
+
+                    if (discussion.ImageFile != null) // If a new image is uploaded
+                    {
+                        // Save the new image
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", discussion.ImageFilename);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await discussion.ImageFile.CopyToAsync(fileStream);
+                        }
+                    }
+                    else
+                    {
+                        // Keep the old image filename if no new file is uploaded
+                        discussion.ImageFilename = existingDiscussion.ImageFilename;
+                    }
+
+                    _context.Entry(existingDiscussion).CurrentValues.SetValues(discussion);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -149,10 +192,14 @@ namespace PinkForum.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(discussion);
+
+            return View(discussion); // Return the view if validation fails
         }
+
+
 
         // GET: Discussions/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -163,7 +210,16 @@ namespace PinkForum.Controllers
             }
 
             var discussion = await _context.Discussion
+                .Include(m => m.ApplicationUser)
                 .FirstOrDefaultAsync(m => m.DiscussionId == id);
+
+            // Get all image filenames in the wwwroot/images directory
+            string imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            var imageFiles = Directory.GetFiles(imagesDirectory).Select(Path.GetFileName).ToList();
+
+            // Pass the image files to the view (or use them in your code)
+            ViewBag.ImageFiles = imageFiles;
+
             if (discussion == null)
             {
                 return NotFound();

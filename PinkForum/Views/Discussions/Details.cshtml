@@ -1,42 +1,55 @@
-﻿@model PinkForum.Models.Discussion
+﻿@model Discussion
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="row">
+    <div class="col-md-9">
+        <div class="card discussion mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="row mb-3" style="display: inline-block;">
+                        <img class="img-thumbnail rounded-circle shadow-sm"
+                             style="height: 15vh; width: 15vh; padding: 0;"
+                             src="@Url.Content("~/profile/" + Model.ApplicationUser?.ImageFilename)"
+                             alt="@Model.ApplicationUser?.Name 's Photo" />
+                        <span class="text-muted">@Model.ApplicationUser?.Name : @Model.CreateDate</span>
+                    </div>
+                </div>
 
-<div>
-    <h4>Discussion</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFilename)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFilename)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreateDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreateDate)
-        </dd>
-    </dl>
+                <div class="row">
+                    <div class="row mb-3" style="text-align: center;">
+                        <h1>@Model.Title</h1>
+                    </div>
+
+                    @if (ViewBag.ImageFiles.Contains(Model.ImageFilename))
+                    {
+                        <div class="row mb-3" style="justify-content: center;">
+                            <img src="@Url.Content("~/images/" + Model.ImageFilename)" style="width: auto;" />
+                        </div>
+                    }
+
+                    <div class="row mb-3" style="justify-content: center;">
+                        <p style="width: 75%;">@Model.Content</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 align-content-center">
+        <div class="row mb-3">
+            <button class="btn btn-primary">
+                <a style="color: white; text-decoration: none; display:block; width: 100%" asp-action="Edit" asp-route-id="@Model?.DiscussionId">Edit</a>
+            </button>
+        </div>
+        <div class="row mb-3">
+            <button class="btn btn-primary">
+                <a style="color: white; text-decoration: none; display:block; width: 100%" asp-action="Index" >Back to List</a>
+            </button>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.DiscussionId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    
+
+

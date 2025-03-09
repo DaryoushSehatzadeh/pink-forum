@@ -1,0 +1,108 @@
+﻿@model List<PinkForum.Models.Discussion>
+
+@{
+    ViewData["Title"] = "Profile";
+
+    var displayPfp = ViewBag.user?.ImageFilename == "" ? Url.Content($"~/profile/default.png") : Url.Content($"~/profile/{ViewBag.user.ImageFilename}");
+    var displayName = ViewBag.user.Name;
+    var displayLocation = ViewBag.user.Location;
+}
+
+
+<div class="row">
+    <div class="card discussion mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <img class="img-thumbnail rounded-circle" src="@displayPfp" style="height: 25vh; width: 25vh;" />
+                </div>
+                <div class="col-md-10">
+                    <p>
+                        <span class="text-muted">Name:</span> @displayName
+                    </p>
+                    <p>
+                        <span class="text-muted">Location:</span> @displayLocation
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1 class="mb-4" style="text-align: center;">@displayName 's Discussions</h1>
+
+@if (Model != null)
+{
+    @foreach (var item in Model)
+    {
+        var username = item.ApplicationUser?.Name;
+        var pfp = item.ApplicationUser?.ImageFilename == "" ? Url.Content($"~/profile/default.png") : Url.Content($"~/profile/{item.ApplicationUser?.ImageFilename}");
+
+        string imageUrl = Url.Content($"~/images/{item.ImageFilename}");
+        int commentCount = item.Comments.Count();
+        Comment? mostRecentComment = item.Comments.OrderByDescending(c => c.CreateDate).FirstOrDefault();
+
+        DateTime now = DateTime.UtcNow;
+        string howLongAgoPosted = GetTimeAgo(now - item.CreateDate);
+        string howLongAgoCommented = mostRecentComment != null ? GetTimeAgo(now - mostRecentComment.CreateDate) : "No comments yet";
+
+        static string GetTimeAgo(TimeSpan timeSpan)
+        {
+            return timeSpan.TotalMinutes < 60 ? $"{(int)timeSpan.TotalMinutes} minutes ago" :
+                   timeSpan.TotalHours < 24 ? $"{(int)timeSpan.TotalHours} hours ago" :
+                   timeSpan.TotalDays < 30 ? $"{(int)timeSpan.TotalDays} days ago" :
+                   timeSpan.TotalDays < 365 ? $"{(int)(timeSpan.TotalDays / 30)} months ago" :
+                                              $"{(int)(timeSpan.TotalDays / 365)} years ago";
+        }
+
+        <div class="row discussion">
+
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2" style="height: 30vh; overflow: hidden;">
+                                <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
+                                    <img src="@imageUrl" class="img-fluid" alt="@item.Content">
+                                </a>
+                            </div>
+
+                            <div class="col-md-10" style="height: 30vh;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
+                                        <h5 class="card-title mb-0">@item.Title</h5>
+                                    </a>
+                                    <div>
+                                        <a href="@Url.Action("Profile", "Home", new { id = item.ApplicationUserId })">
+                                            <span class="text-muted small">@username</span>
+                                            <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 5vh; width: 5vh;" />
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="row card-row">
+                                    <p class="card-text">
+                                        @item.Content
+                                    </p>
+                                </div>
+
+                                <div class="row card-foot">
+                                    <p class="text-muted small">
+                                        Posted: @howLongAgoPosted &nbsp;&nbsp;&nbsp;&nbsp; @commentCount <i class="fa-regular fa-comment"></i> &nbsp;&nbsp;&nbsp;&nbsp; Most Recent: @howLongAgoCommented
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+else
+{
+    <h5>
+        This user has no discussions.
+    </h5>
+}

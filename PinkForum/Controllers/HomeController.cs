@@ -34,6 +34,13 @@ namespace PinkForum.Controllers
                 .Include(m => m.Comments)
                 .ToListAsync();
 
+            // Get all image filenames in the wwwroot/images directory
+            string imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            var imageFiles = Directory.GetFiles(imagesDirectory).Select(Path.GetFileName).ToList();
+
+            // Pass the image files to the view (or use them in your code)
+            ViewBag.ImageFiles = imageFiles;
+
             return View(discussions);
         }
 
@@ -49,7 +56,15 @@ namespace PinkForum.Controllers
             var discussion = await _context.Discussion
                 .Include(m => m.ApplicationUser)
                 .Include(m => m.Comments)
+                    .ThenInclude(c => c.ApplicationUser)
                 .FirstOrDefaultAsync(m => m.DiscussionId == id);
+
+            // Get all image filenames in the wwwroot/images directory
+            string imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            var imageFiles = Directory.GetFiles(imagesDirectory).Select(Path.GetFileName).ToList();
+
+            // Pass the image files to the view (or use them in your code)
+            ViewBag.ImageFiles = imageFiles;
 
             if (discussion == null)
             {
@@ -57,6 +72,27 @@ namespace PinkForum.Controllers
             }
 
             return View(discussion);
+        }
+
+        public async Task<IActionResult> Profile(string? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ApplicationUser user = await _userManager.FindByIdAsync(id);
+
+            var discussions = await _context.Discussion
+                .Include(m => m.Comments)
+                    .ThenInclude(c => c.ApplicationUser)
+                .Include(m => m.ApplicationUser)
+                .Where(d => d.ApplicationUserId == id)
+                .ToListAsync();
+
+            ViewBag.user = user;
+
+            return View(discussions);
         }
 
         public IActionResult Privacy()

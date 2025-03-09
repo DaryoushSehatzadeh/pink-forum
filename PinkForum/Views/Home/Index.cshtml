@@ -1,22 +1,23 @@
 ﻿@model List<PinkForum.Models.Discussion>
 
 @{
-
     ViewData["Title"] = "Home Page";
 }
+<div class="row" style="justify-content: center;">
+    <a href="@Url.Action("Create", "Discussions")" class="btn btn-primary newDiscussionBtn mb-3" style="width: 60%;">
+        New Discussion
+    </a>
+</div>
 
-<a href="@Url.Action("Create", "Discussions")" class="btn btn-primary newDiscussionBtn mb-3">
-    New Discussion
-</a>
-
-@if (Model != null)
+@if (Model != null && Model.Any())
 {
     @foreach (var item in Model)
     {
         var username = item.ApplicationUser?.Name;
-        var pfp = item.ApplicationUser?.ImageFilename == "" ? Url.Content($"~/profile/default.png") : Url.Content($"~/profile/{item.ApplicationUser?.ImageFilename}");
+        var pfp = item.ApplicationUser?.ImageFilename == "" ? Url.Content($"~/profile/default.png") : Url.Content($"~/profile/{item.ApplicationUser?.ImageFilename}");        
 
         string imageUrl = Url.Content($"~/images/{item.ImageFilename}");
+
         int commentCount = item.Comments.Count();
         Comment? mostRecentComment = item.Comments.OrderByDescending(c => c.CreateDate).FirstOrDefault();
 
@@ -40,9 +41,12 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-2" style="height: 30vh; overflow: hidden;">
+                                @if (ViewBag.ImageFiles.Contains(item.ImageFilename))
+                                {
                                     <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
                                         <img src="@imageUrl" class="img-fluid" alt="@item.Content">
                                     </a>
+                                }
                                 </div>
 
                                 <div class="col-md-10" style="height: 30vh;">
@@ -53,7 +57,7 @@
                                         <div>
                                         <a href="@Url.Action("Profile", "Home", new { id = item.ApplicationUserId })">
                                             <span class="text-muted small">@username</span>
-                                            <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 5vh; width: 5vh;" />
+                                            <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 5vh; width: 5vh; padding: 0;" />
                                         </a>
                                         </div>
                                     </div>
@@ -76,10 +80,13 @@
                 </div>
                 
             </div>
-        }
     }
-    else {
-        <h5>
+}
+else
+{
+    <div class="row">
+        <h5 style="text-align: center;">
             Be the first to start a Discussion!
         </h5>
-    }
+    </div> 
+}

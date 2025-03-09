@@ -4,51 +4,119 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="row mb-4">
+    <div class="col-md-9">
+        <h1>My Discussions</h1>
+    </div>
+    <div class="col-md-3 d-flex justify-content-end align-items-center">
+        <button class="btn btn-primary">
+            <a asp-action="Create" style="color: white; text-decoration: none;">Create New</a>
+        </button>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageFilename)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreateDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
+<hr />
 
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageFilename)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DiscussionId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DiscussionId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DiscussionId">Delete</a>
-            </td>
-        </tr>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var item in Model)
+    {
+        var username = item.ApplicationUser?.Name;
+        var pfp = item.ApplicationUser?.ImageFilename == "" ? Url.Content($"~/profile/default.png") : Url.Content($"~/profile/{item.ApplicationUser?.ImageFilename}");
+
+        string imageUrl = Url.Content($"~/images/{item.ImageFilename}");
+
+        @* int commentCount = item.Comments.Count(); *@
+        @* Comment? mostRecentComment = item.Comments.OrderByDescending(c => c.CreateDate).FirstOrDefault(); *@
+
+        DateTime now = DateTime.UtcNow;
+        string howLongAgoPosted = GetTimeAgo(now - item.CreateDate);
+        @* string howLongAgoCommented = mostRecentComment != null ? GetTimeAgo(now - mostRecentComment.CreateDate) : "No comments yet"; *@
+
+        static string GetTimeAgo(TimeSpan timeSpan)
+        {
+            return timeSpan.TotalMinutes < 60 ? $"{(int)timeSpan.TotalMinutes} minutes ago" :
+                   timeSpan.TotalHours < 24 ? $"{(int)timeSpan.TotalHours} hours ago" :
+                   timeSpan.TotalDays < 30 ? $"{(int)timeSpan.TotalDays} days ago" :
+                   timeSpan.TotalDays < 365 ? $"{(int)(timeSpan.TotalDays / 30)} months ago" :
+                                              $"{(int)(timeSpan.TotalDays / 365)} years ago";
+        }
+        <div class="row mb-4">
+        <div class="col-md-9">
+            <div class="row discussion">
+
+                <div class="col-md-12">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2" style="height: 20vh; overflow: hidden;">
+                                    @if (ViewBag.ImageFiles.Contains(item.ImageFilename))
+                                    {
+                                        <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
+                                            <img src="@imageUrl" class="img-fluid" alt="@item.Content">
+                                        </a>
+                                    }
+                                </div>
+
+                                <div class="col-md-10" style="height: 20vh;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="@Url.Action("DiscussionDetails", "Home", new { id = item.DiscussionId })">
+                                            <h5 class="card-title mb-0">@item.Title</h5>
+                                        </a>
+                                        <div>
+                                            <a href="@Url.Action("Profile", "Home", new { id = item.ApplicationUserId })">
+                                                <span class="text-muted small">@username</span>
+                                                <img class="img-thumbnail rounded-circle" src="@pfp" style="height: 5vh; width: 5vh; padding: 0;" />
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="row card-row">
+                                        <p class="card-text">
+                                            @item.Content
+                                        </p>
+                                    </div>
+
+                                    <div class="row card-foot"> 
+                                        <p class="text-muted small"> 
+                                            Posted: @howLongAgoPosted
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </div>
+
+     <div class="col-md-3">
+        <div class="row mb-3">
+            <button class="btn btn-primary">
+                <a style="color: white; text-decoration: none; display:block; width: 100%" asp-action="Edit" asp-route-id="@item.DiscussionId">Edit</a>
+            </button>
+        </div>
+
+        <div class="row mb-3">
+            <button class="btn btn-primary">
+                <a style="color: white; text-decoration: none; display:block; width: 100%" asp-action="Details" asp-route-id="@item.DiscussionId">Details</a>
+            </button>
+        </div>
+            
+        <div class="row mb-3">
+            <button class="btn btn-primary">
+                <a style="color: white; text-decoration: none; display:block; width: 100%" asp-action="Delete" asp-route-id="@item.DiscussionId">Delete</a>
+            </button>
+        </div> 
+     </div>
+     </div>
+    }
 }
-    </tbody>
-</table>
+else
+{
+    <div class="row">
+        <h5 style="text-align: center;">
+            You haven't started any discussions yet!
+        </h5>
+    </div>
+}

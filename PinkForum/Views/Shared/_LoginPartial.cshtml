@@ -7,12 +7,20 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
+    <li class="nav-item" style="align-content: center">
+        <p class="text-muted" style="margin-bottom: 0;">Hello @UserManager.GetUserName(User)!</p>
+    </li>
+
     <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+        <a id="manage" class="nav-link text-dark" asp-controller="Home" asp-action="Profile" asp-route-id="@UserManager.GetUserId(User)" title="My Profile">My Profile</a>
+    </li>
+
+    <li class="nav-item">
+        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Account</a>
     </li>
 
     <li>
-         <a id="myDiscussions" class="nav-link text-dark" asp-area="Discussions" asp-page="/Discussions/MyDiscussions" title="My Discussions">My Discussions</a>
+          <a id="myDiscussions" class="nav-link text-dark" asp-area="" asp-controller="Discussions" asp-action="Index" title="My Discussions">My Discussions</a>
     </li>
 
     <li class="nav-item">
